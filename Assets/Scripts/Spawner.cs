@@ -53,17 +53,19 @@ public class Spawner : MonoBehaviour
     /// </summary>
     private float nextSpawnIn;
 
+    private float timePassed;
+
     /// <summary>
     /// Called before the first frame update.
     /// </summary>
-    private void Start()
-    { ResetSpawn(); }
+    private void Start() => ResetSpawn();
 
     /// <summary>
     /// Update called once per frame.
     /// </summary>
     private void Update()
     {
+        timePassed += Time.deltaTime;
         if (!spawnObstacles) return; // Check if we should spawn.
         spawnAccumulator += Time.deltaTime;
         if (!(spawnAccumulator >= nextSpawnIn)) return; // Spawn at most one obstacle per frame.
@@ -79,20 +81,32 @@ public class Spawner : MonoBehaviour
     public void SpawnObstacle()
     {
         // Spawn the obstacle.
-        var obstacle = Instantiate(obstaclePrefab, transform);
+        var obstacleObject = Instantiate(obstaclePrefab, transform);
+        var obstacle = obstacleObject.GetComponent<Obstacle>();
+
+        var initialSpeed = obstacle.movementSpeed;
+
+        obstacle.movementSpeed = timePassed switch
+        {
+            < 10f => initialSpeed,
+            < 25f => initialSpeed * 1.2f,
+            < 40f => initialSpeed * 1.5f,
+            < 80f => initialSpeed * 1.8f,
+            _ => initialSpeed * 2
+        };
 
         // Move it to the target location.
         var spawnDown = RandomBool();
-        obstacle.transform.position += (Vector3)(spawnDown ?
+        obstacleObject.transform.position += (Vector3)(spawnDown ?
             spawnOffset + (1.0f - spawnSize) / 2.0f :
             -spawnOffset - (1.0f - spawnSize) / 2.0f
         );
 
         // Scale it.
-        obstacle.transform.localScale = new Vector3(spawnSize, spawnSize, spawnSize);
+        obstacleObject.transform.localScale = new Vector3(spawnSize, spawnSize, spawnSize);
 
         // Move the obstacle into the correct layer.
-        obstacle.layer = LayerMask.NameToLayer(spawnLayer);
+        obstacleObject.layer = LayerMask.NameToLayer(spawnLayer);
     }
 
     /// <summary>
