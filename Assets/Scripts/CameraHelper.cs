@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -13,8 +11,8 @@ public class CameraHelper : MonoBehaviour
     /// <summary>
     /// Target camera size in units.
     /// </summary>
-    public float2 targetSize = new float2(4.0f, 4.0f);
-    
+    public float2 targetSize = new(4.0f, 4.0f);
+
     /// <summary>
     /// The managed camera component.
     /// </summary>
@@ -24,27 +22,27 @@ public class CameraHelper : MonoBehaviour
     /// Current resolution we are working with.
     /// </summary>
     private float2 mResolution;
-    
+
     /// <summary>
     /// Called before the first frame update.
     /// </summary>
-    void Start()
+    private void Start()
     { mCamera = GetComponent<Camera>(); }
 
     /// <summary>
     /// Update called once per frame.
     /// </summary>
-    void Update()
+    private void Update()
     {
         // Update is only needed when the resolution is changed.
-        float2 currentResolution = new float2((float)Screen.width, (float)Screen.height);
+        var currentResolution = new float2(Screen.width, Screen.height);
         if (mResolution.Equals(currentResolution))
         { return; }
 
         // Set the extent of size we want to use.
         var cameraSize = Math.Max(targetSize.x, targetSize.y);
         mCamera.orthographicSize = cameraSize;
-        
+
         // Calculate the current aspect ratio of the screen and the requested target.
         var currentAspectRatio = (float)Screen.width / Screen.height;
         var targetAspectRatio = targetSize.x / targetSize.y;
@@ -63,11 +61,10 @@ public class CameraHelper : MonoBehaviour
         }
         else
         { // The screen is too high -> Horizontal letterbox.
-            var letterboxHeight = letterboxRatio;
             cameraRect.x = 0.0f;
-            cameraRect.y = (1.0f - letterboxHeight) / 2.0f;
+            cameraRect.y = (1.0f - letterboxRatio) / 2.0f;
             cameraRect.width = 1.0f;
-            cameraRect.height = letterboxHeight;
+            cameraRect.height = letterboxRatio;
         }
 
         // Update the camera to include our new letterbox.

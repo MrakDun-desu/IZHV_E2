@@ -36,17 +36,17 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Current accumulated score.
     /// </summary>
-    private float mCurrentScore = 0.0f;
+    private float mCurrentScore;
 
     /// <summary>
     /// Is the game lost?
     /// </summary>
-    private bool mGameLost = false;
+    private bool mGameLost;
 
     /// <summary>
     /// Did we start the game?
     /// </summary>
-    private static bool sGameStarted = false;
+    private static bool sGameStarted;
 
     /// <summary>
     /// Singleton instance of the GameManager.
@@ -56,9 +56,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Getter for the singleton GameManager object.
     /// </summary>
-    public static GameManager Instance
-    { get { return sInstance; } }
-
+    public static GameManager Instance => sInstance;
     /// <summary>
     /// Called when the script instance is first loaded.
     /// </summary>
@@ -75,15 +73,9 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Called before the first frame update.
-    /// </summary>
-    void Start()
-    { }
-
-    /// <summary>
     /// Update called once per frame.
     /// </summary>
-    void Update()
+    private void Update()
     {
         // Start the game after the first "Jump".
         if (!sGameStarted && Input.GetButtonDown("Jump"))
