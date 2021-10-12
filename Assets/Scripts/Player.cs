@@ -203,4 +203,9 @@ public class Player : MonoBehaviour
         // Loose the game.
         GameManager.Instance.LooseGame();
     }
+
+
+    public void SetSprite(Sprite sprite) => mSpriteRenderer.sprite = sprite;
+
+    public Sprite GetSprite() => mSpriteRenderer.sprite;
 }

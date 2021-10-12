@@ -43,6 +43,12 @@ public class Spawner : MonoBehaviour
     /// </summary>
     public GameObject obstaclePrefab;
 
+    public float effectiveSpawnFrequencyMean;
+
+    public int maxInRow = 3;
+    
+    public Level[] levels;
+
     /// <summary>
     /// Accumulated time since the last spawn in seconds.
     /// </summary>
@@ -55,6 +61,19 @@ public class Spawner : MonoBehaviour
 
     private float timePassed;
 
+    private int levelIndex;
+
+    private int sameInRow = 1;
+
+    private bool previous;
+
+    private Player player;
+
+    private void Awake()
+    {
+        player = FindObjectOfType<Player>();
+    }
+
     /// <summary>
     /// Called before the first frame update.
     /// </summary>
@@ -65,12 +84,26 @@ public class Spawner : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        // Set the difficulty level depending on time passed
         timePassed += Time.deltaTime;
+        if (levelIndex < levels.Length - 1 && timePassed > levels[levelIndex + 1].timePassed) {
+            levelIndex++;
+            effectiveSpawnFrequencyMean = spawnFrequencyMean * levels[levelIndex].spawnMultiplier;
+            var sprite = levelIndex switch
+            {
+                2 => player.spriteHappy,
+                3 => player.spritePog,
+                _ => player.GetSprite()
+            };
+            
+            player.SetSprite(sprite);
+        }
+
         if (!spawnObstacles) return; // Check if we should spawn.
         spawnAccumulator += Time.deltaTime;
         if (!(spawnAccumulator >= nextSpawnIn)) return; // Spawn at most one obstacle per frame.
         spawnAccumulator -= nextSpawnIn;
-        nextSpawnIn = RandomNormal(spawnFrequencyMean, spawnFrequencyStd);
+        nextSpawnIn = RandomNormal(effectiveSpawnFrequencyMean, spawnFrequencyStd);
 
         SpawnObstacle();
     }
@@ -84,16 +117,7 @@ public class Spawner : MonoBehaviour
         var obstacleObject = Instantiate(obstaclePrefab, transform);
         var obstacle = obstacleObject.GetComponent<Obstacle>();
 
-        var initialSpeed = obstacle.movementSpeed;
-
-        obstacle.movementSpeed = timePassed switch
-        {
-            < 10f => initialSpeed,
-            < 25f => initialSpeed * 1.2f,
-            < 40f => initialSpeed * 1.5f,
-            < 80f => initialSpeed * 1.8f,
-            _ => initialSpeed * 2
-        };
+        obstacle.movementSpeed *= levels[levelIndex].speedMultiplier;
 
         // Move it to the target location.
         var spawnDown = RandomBool();
@@ -130,7 +154,11 @@ public class Spawner : MonoBehaviour
     /// </summary>
     public void ResetSpawn()
     {
+        effectiveSpawnFrequencyMean = spawnFrequencyMean;
+        levelIndex = 0;
+        timePassed = 0;
         spawnAccumulator = 0.0f;
+        player.SetSprite(player.spriteNeutral);
         nextSpawnIn = RandomNormal(spawnFrequencyMean, spawnFrequencyStd);
     }
 
@@ -173,5 +201,24 @@ public class Spawner : MonoBehaviour
     /// Generate a random bool - coin flip.
     /// </summary>
     /// <returns>Return a random boolean value.</returns>
-    public static bool RandomBool() => Random.value >= 0.5; 
+    public bool RandomBool()
+    {
+        var next = Random.value >= 0.5;
+        if (next == previous)
+        {
+            sameInRow++;
+            if (sameInRow > maxInRow)
+            {
+                next = !next;
+                sameInRow = 1;
+            }
+        }
+        else
+            sameInRow = 1;
+        
+        previous = next;
+
+        return next;
+
+    }
 }

@@ -522,7 +522,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 706129582}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -3, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -634,7 +634,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 721072281}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1101,8 +1101,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnObstacles: 1
-  spawnFrequencyMean: 2
-  spawnFrequencyStd: 0
+  spawnFrequencyMean: 0.8
+  spawnFrequencyStd: 0.1
   spawnOffset:
     x: 0
     y: 2
@@ -1110,6 +1110,21 @@ MonoBehaviour:
   spawnSize: 1
   spawnLayer: Obstacle
   obstaclePrefab: {fileID: 444823138257878674, guid: d9e6dffab2dc3ef4dbf678bf85c63c93, type: 3}
+  effectiveSpawnFrequencyMean: 0
+  maxInRow: 3
+  levels:
+  - timePassed: 10
+    speedMultiplier: 1.5
+    spawnMultiplier: 0.9
+  - timePassed: 20
+    speedMultiplier: 1.8
+    spawnMultiplier: 0.8
+  - timePassed: 35
+    speedMultiplier: 2.2
+    spawnMultiplier: 0.7
+  - timePassed: 50
+    speedMultiplier: 2.5
+    spawnMultiplier: 0.6
 --- !u!1 &1213650991
 GameObject:
   m_ObjectHideFlags: 0
